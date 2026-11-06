@@ -171,7 +171,7 @@
 
 <div class="finale pixbox" id="finale">
   <h3>THANK YOU FOR VISITING!</h3>
-  <p>And thank you for picking — enjoy your apples! 🍎</p>
+  <p id="finMsg">And thank you for helping Summer pick apples! 🍎</p>
   <button class="btn" id="again">GROW APPLES FOR THE NEXT VISITOR</button>
 </div>
 
@@ -662,7 +662,7 @@ document.getElementById('finish').onclick=()=>{if(busy||openApple)return;ac();fi
 
 /* finale */
 const fin=document.getElementById('finale');
-function finale(){if(fin.classList.contains('on'))return;fin.classList.add('on');sfx.fanfare();for(let i=0;i<4;i++)setTimeout(()=>sparkle(bx+(Math.random()-.5)*bw,bBottom-bh-6,PROJECTS[i%PROJECTS.length].pal,26),i*220);}
+function finale(){if(fin.classList.contains('on'))return;document.getElementById('finMsg').textContent=basket.length===apples.length?'And thank you for helping Summer pick all the apples! 🍎':'And thank you for helping Summer pick apples! 🍎';fin.classList.add('on');sfx.fanfare();for(let i=0;i<4;i++)setTimeout(()=>sparkle(bx+(Math.random()-.5)*bw,bBottom-bh-6,PROJECTS[i%PROJECTS.length].pal,26),i*220);}
 document.getElementById('again').onclick=()=>{fin.classList.remove('on');basket.length=0;document.getElementById('cn').textContent=0;
   apples.forEach((a,i)=>{a.state='tree';a.x=a.hx;a.y=a.hy;a.slot=-1;a.grow=.001;a.gt=performance.now()+i*180;});shake();setWater(false);setTimeout(()=>{canWiggleT=performance.now();toast('NEW APPLES! WATER THE TREE TO PICK 💧')},900);};
 
