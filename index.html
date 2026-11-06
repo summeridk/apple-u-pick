@@ -94,7 +94,20 @@
   .meta div{display:flex;gap:10px}
   .meta div::before{content:"";width:8px;height:8px;background:var(--c);margin-top:8px;flex:none;box-shadow:2px 2px 0 var(--ink)}
   .desc{margin-top:18px;font-size:16px;line-height:1.7}
-.flow{display:flex;flex-direction:column;gap:34px;margin-top:10px}
+.secret{position:relative;min-height:560px;padding:30px 30px 0;overflow:hidden;
+    background:linear-gradient(#fff3f8 0 70%,#ffe0ee 70%);display:flex;flex-direction:column}
+  .sign2{align-self:center;text-align:center;max-width:560px;padding:22px 26px 24px;background:#fff;transform:rotate(-1.5deg);
+    box-shadow:0 -4px 0 0 var(--ink),0 4px 0 0 var(--ink),-4px 0 0 0 var(--ink),4px 0 0 0 var(--ink),8px 8px 0 0 rgba(43,26,16,.15);animation:signBob 2.4s ease-in-out infinite}
+  @keyframes signBob{50%{transform:rotate(1deg) translateY(-6px)}}
+  .sign2 .lock{font-size:34px;display:block;margin-bottom:6px}
+  .sign2 h3{font-family:var(--px);font-weight:400;font-size:clamp(14px,2vw,20px);line-height:1.6;color:var(--c);text-shadow:3px 3px 0 var(--ink)}
+  .sign2 p{font-family:var(--pix);font-size:18px;margin-top:10px;color:#6b4b2f}
+  .playground{position:relative;flex:1;min-height:260px;margin-top:20px}
+  .pbw{position:absolute;width:56px;height:63px;cursor:pointer}
+  .pbw canvas{width:56px;height:63px;image-rendering:pixelated;display:block}
+  .pbtalk{bottom:66px;left:28px;white-space:nowrap}
+  .floor{height:10px;margin:0 -30px;background:repeating-linear-gradient(90deg,#c58b4c 0 18px,#a36a32 18px 36px);box-shadow:0 -3px 0 0 var(--ink)}
+  .flow{display:flex;flex-direction:column;gap:34px;margin-top:10px}
   .flowh{font-family:var(--px);font-weight:400;font-size:13px;color:var(--c);text-shadow:2px 2px 0 var(--ink)}
   .fstep{display:flex;align-items:center;gap:30px}
   .fstep.right{flex-direction:row-reverse}
@@ -169,7 +182,7 @@
     <button class="btn" id="music" aria-pressed="true">♫ MUSIC</button>
     <button class="btn" id="sound" aria-pressed="true">♪ ON</button>
     <span class="btn count water" id="water" aria-live="polite">💧 THIRSTY</span>
-    <span class="btn count" id="count" aria-live="polite">🍎 <span id="cn">0</span>/7</span>
+    <span class="btn count" id="count" aria-live="polite">🍎 <span id="cn">0</span>/8</span>
   </div>
 </header>
 
@@ -257,7 +270,11 @@ const PROJECTS = [
     desc:"There are many ways to express the same feeling. Starting from a feeling — like Anger, drawn as a grumpy little cloud — the app invites you to choose how to let it out: Show it with writing and pictures, Move it with your body, Sign it with your hands, or Speak it with voice and songs. Each path opens cards to explore, such as ASL clips for “I am mad” and “Stop!”, or gentler options like taking a deep breath and saying what you need.",
     lists:[["Four ways",["Show — writing & pictures","Move — body & actions","Sign — hands & signs","Speak — voice & songs"]],["Sign cards",["I am mad","Stop!","Thumb down","No"]]],
     try:["https://www.figma.com/proto/DNGCVCSEQkWhkdAzypOg2i/Untitled?node-id=48-1758&t=I7Nsht8sotU80ez4-1","OPEN FIGMA PROTOTYPE ↗","Tap through the clickable prototype in Figma."],
-    hero:"img/hero9.jpg", gallery:[["img/g9_model.jpg","Physical model — “Cloudy’s Many Hellos”, a laser-cut wooden puzzle of the grumpy cloud, with its pieces in a take-away box"]] }
+    hero:"img/hero9.jpg", gallery:[["img/g9_model.jpg","Physical model — “Cloudy’s Many Hellos”, a laser-cut wooden puzzle of the grumpy cloud, with its pieces in a take-away box"]] },
+  { n:"08", title:"Dream Space", kind:"Used Apartment Renovation · Internship Project", pal:{o:'#ff6fae',h:'#ffbcdc',d:'#c2306f'}, secret:true,
+    meta:["Internship project","2025","Apartment renovation"],
+    desc:"A renovation project that turns a used apartment into a dream space. The details are still under wraps — the apple buddies are guarding them for now!",
+    lists:[], hero:"", gallery:[] }
 ];
 
 /* ======== PROJECT DIARY — draft entries, edit freely ========
@@ -278,7 +295,7 @@ const DIARY=[
   {mood:["☁️","Thoughtful, a little tender"],weather:["🌦️","Grey sky, then a bit of light"],place:"My laptop, sketchbook and Figma",
    energy:[4,"Late nights drawing a grumpy cloud"],with:"Everyone who told me how they show their feelings",note:"Every feeling deserves more than one way out."}
 ];
-PROJECTS.forEach((p,i)=>p.diary=DIARY[i]);
+PROJECTS.forEach((p,i)=>p.diary=DIARY[i]||null);
 
 /* ================= helpers ================= */
 const cv=document.getElementById('scene'), g=cv.getContext('2d');
@@ -323,7 +340,7 @@ const ROTTEN={o:'#8a6a3a',h:'#b39563',d:'#5e4524'};
 /* ================= layout & static art ================= */
 let W,H,S,LW,LH,gy,tx,cy,R,bx,bBottom,bw,bh,portrait,bg,canopy,canopyMask,cox,coy,trunk,trunkX,trunkY;
 const CIRCLES=[[0,0,1],[-.62,.22,.68],[.62,.18,.72],[0,-.48,.72],[-.32,.5,.62],[.32,.52,.6],[-.5,-.3,.55],[.5,-.32,.55]];
-const SPOTS=[[-.62,-.18],[.05,-.66],[.66,-.12],[-.3,.36],[.36,.4],[-.92,.38],[.92,.3]];
+const SPOTS=[[-.62,-.18],[.05,-.66],[.66,-.12],[-.3,.36],[.36,.4],[-.92,.38],[.92,.3],[.48,-.5]];
 function layout(){
   W=innerWidth;H=innerHeight;portrait=H>W*1.05;
   S=Math.max(3,Math.floor(Math.min(W/240,H/150)));
@@ -550,6 +567,41 @@ function wipe(color,mid,done){
 
 /* ================= project sheet ================= */
 const sheet=document.getElementById('sheet');
+const PLAY_LINES=["Ask Summer! 🙋","Top secret 🤫","Dream space! ✨","We’re renovating! 🛠️","Wanna know more? 👀","Hi hi hi! 👋","Shhh… it’s a surprise 🎁","Measure twice, cut once 📏","Paint’s still wet! 🎨","Wheee! 🎉"];
+function fillSecret(p){
+  document.getElementById('sh-gallery').innerHTML=`<div class="secret pixbox">
+    <div class="sign2"><span class="lock">🔒</span><h3>ASK SUMMER FOR DETAILS!</h3>
+      <p>If you’re interested in this project, ask Summer for more info 💌</p></div>
+    <div class="playground" id="playground" aria-label="Apple buddies playing"></div>
+    <div class="floor"></div></div>`;
+  const pg=document.getElementById('playground');
+  const pals=PROJECTS.map(x=>x.pal);
+  playBuddies=[];
+  const n=innerWidth<820?7:12;
+  for(let k=0;k<n;k++){const c=document.createElement('canvas');c.width=16;c.height=18;c.className='pb';
+    const t=document.createElement('div');t.className='buddytalk pbtalk';
+    const wrap=document.createElement('div');wrap.className='pbw';wrap.append(t,c);pg.appendChild(wrap);
+    const b={c,ctx:c.getContext('2d'),wrap,t,pal:pals[k%pals.length],x:Math.random()*0.9,lane:Math.random(),dir:Math.random()<.5?1:-1,
+      sp:.0012+Math.random()*.0018,act:'walk',actT:0,next:performance.now()+500+Math.random()*3000,last:0,talkT:0};
+    wrap.onclick=()=>{b.act=['hop','heart','spin','wave'][Math.floor(Math.random()*4)];b.actT=performance.now();
+      t.textContent=PLAY_LINES[Math.floor(Math.random()*PLAY_LINES.length)];t.classList.add('on');b.talkT=performance.now();
+      tone(700+Math.random()*500,.05,'square',.05);tone(1100,.06,'square',.05,.05);};
+    playBuddies.push(b);}
+  playChatter=performance.now()+1200;
+}
+let playBuddies=[],playChatter=0;
+function playTick(now){
+  if(openApple&&openApple.p.secret&&playBuddies.length&&playBuddies[0].c.isConnected){
+    if(now>playChatter){const b=playBuddies[Math.floor(Math.random()*playBuddies.length)];b.t.textContent=PLAY_LINES[Math.floor(Math.random()*PLAY_LINES.length)];b.t.classList.add('on');b.talkT=now;playChatter=now+1600+Math.random()*1800;}
+    for(const b of playBuddies){if(now-b.last<40)continue;const dt=now-b.last;b.last=now;
+      if(b.act==='walk'){b.x+=b.dir*b.sp*Math.min(dt,80)/40*2.2;if(b.x>.94){b.x=.94;b.dir=-1;}if(b.x<0){b.x=0;b.dir=1;}
+        if(now>b.next){b.act=['hop','wave','heart','spin','hop'][Math.floor(Math.random()*5)];b.actT=now;}}
+      else if(now-b.actT>1300){b.act='walk';b.next=now+1500+Math.random()*3500;if(Math.random()<.3)b.dir*=-1;}
+      if(b.talkT&&now-b.talkT>2200){b.t.classList.remove('on');b.talkT=0;}
+      b.wrap.style.left=(b.x*100)+'%';b.wrap.style.bottom=(8+b.lane*120)+'px';b.wrap.style.zIndex=Math.round(200-b.lane*100);
+      b.c.style.transform=`scaleX(${b.dir})`;drawBuddy(b,now);}}
+  requestAnimationFrame(playTick);}
+requestAnimationFrame(playTick);
 function fill(a){const p=a.p;sheet.style.setProperty('--c',p.pal.o);
   const ac2=document.getElementById('sh-apple').getContext('2d');ac2.clearRect(0,0,9,9);drawApple(ac2,4,4,p.pal);
   document.getElementById('sh-num').textContent=p.n;
@@ -564,6 +616,7 @@ function fill(a){const p=a.p;sheet.style.setProperty('--c',p.pal.o);
   document.getElementById('sh-lists').innerHTML=p.lists.map(([h,it])=>`<div><h4>${h.toUpperCase()}</h4><ul>${it.map(x=>`<li>${x}</li>`).join('')}</ul></div>`).join('');
   document.getElementById('sh-lists').style.display=p.lists.length?'grid':'none';
   document.getElementById('sh-tryleft').innerHTML=tryLeft?trybox:'';
+  if(p.secret){fillSecret(p);walker=null;const nx=apples.some(x=>x.state!=='basket');document.getElementById('next').textContent=nx?'💧 WATER FOR NEXT →':'ALL PICKED ✦';document.getElementById('sh-lists').style.display='none';document.getElementById('sh-tryleft').innerHTML='';document.getElementById('scroller').scrollTop=0;return;}
   const D=p.diary,hearts='<span class="hearts">'+'♥'.repeat(D.energy[0])+'<i>'+'♥'.repeat(5-D.energy[0])+'</i></span>';
   const diary=`<aside class="diary pixbox"><h3>PROJECT DIARY</h3>
     <div class="drow"><span class="dk">MOOD</span><span class="dv"><b class="emo">${D.mood[0]}</b>${D.mood[1]}</span></div>
@@ -579,7 +632,7 @@ function fill(a){const p=a.p;sheet.style.setProperty('--c',p.pal.o);
       <div class="fnote"><span class="fnum">${String(i+1).padStart(2,'0')}</span><b>${step}</b><p>${cap}</p></div></div>`).join('')}</div>`:'');
   const nx=apples.some(x=>x.state!=='basket');document.getElementById('next').textContent=nx?'💧 WATER FOR NEXT →':'ALL PICKED ✦';
   document.getElementById('scroller').scrollTop=0;startWalker(p);
-  const hi=sheet.querySelector('.hero');const place=()=>requestAnimationFrame(()=>requestAnimationFrame(placeWalker));if(hi.complete)place();else hi.onload=place;}
+  const hi=sheet.querySelector('.hero');if(!hi)return;const place=()=>requestAnimationFrame(()=>requestAnimationFrame(placeWalker));if(hi.complete)place();else hi.onload=place;}
 function placeWalker(){const hc=sheet.querySelector('.herocol'),sd=sheet.querySelector('.side'),wk=sheet.querySelector('.walker');if(!hc||!wk)return;
   wk.remove();const sum=el=>[...el.children].reduce((t,c)=>t+c.offsetHeight,0),hH=sum(hc),sH=sum(sd);
   (innerWidth>820&&sH>hH?hc:sd).appendChild(wk);}
