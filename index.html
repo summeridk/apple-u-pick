@@ -624,31 +624,37 @@ document.getElementById('boothClose').onclick=()=>{booth.classList.remove('on');
 
 /* ---------- playful background music (original chiptune loop) ---------- */
 const music=(()=>{let on=true,playing=false,master=null,timer=null,step=0,nextT=0,ducked=false;
-  const BPM=138,E=60/BPM/2;
-  const MEL=[72,0,76,79,76,0,72,74, 76,76,74,72,69,0,72,0, 74,0,77,81,79,77,76,74, 72,74,76,79,72,0,67,0,
-             72,0,76,79,81,79,76,0, 77,77,76,74,72,0,74,0, 76,0,74,72,69,72,74,76, 72,0,0,79,72,0,0,0];
-  const BASS=[48,0,55,0,48,0,55,0, 45,0,52,0,45,0,52,0, 50,0,57,0,43,0,50,0, 48,0,55,0,48,0,43,0];
+  const BPM=88,E=60/BPM/2; // gentle, music-box tempo
+  // calm C-major pentatonic tune with little playful skips (0 = rest)
+  const MEL=[76,0,79,0,81,79,76,0, 74,0,76,0,72,0,0,0, 72,0,74,76,79,0,76,74, 76,0,0,0,0,0,0,0,
+             79,0,81,0,84,81,79,0, 76,0,79,76,74,0,0,0, 72,74,76,0,74,72,69,0, 72,0,0,0,0,0,0,0];
+  const BASS=[48,0,0,0,55,0,0,0, 45,0,0,0,52,0,0,0, 41,0,0,0,48,0,0,0, 43,0,0,0,50,0,0,0];
   const hz=m=>440*Math.pow(2,(m-69)/12);
-  function note(t,m,len,type,vol){const a=actx,o=a.createOscillator(),gn=a.createGain(),f=a.createBiquadFilter();
-    o.type=type;o.frequency.value=hz(m);f.type='lowpass';f.frequency.value=type==='square'?2200:900;
-    gn.gain.setValueAtTime(0,t);gn.gain.linearRampToValueAtTime(vol,t+.01);gn.gain.exponentialRampToValueAtTime(.0001,t+len);
-    o.connect(f).connect(gn).connect(master);o.start(t);o.stop(t+len+.02);}
-  function hat(t){const a=actx,len=a.sampleRate*.03,b=a.createBuffer(1,len,a.sampleRate),d=b.getChannelData(0);
-    for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*(1-i/len);const s2=a.createBufferSource(),f=a.createBiquadFilter(),gn=a.createGain();
-    f.type='highpass';f.frequency.value=6000;gn.gain.value=.25;s2.buffer=b;s2.connect(f).connect(gn).connect(master);s2.start(t);}
-  function sched(){while(nextT<actx.currentTime+.25){const m=MEL[step%MEL.length],bs=BASS[step%BASS.length];
-      if(m)note(nextT,m,E*.9,'square',.5);if(bs)note(nextT,bs,E*1.8,'triangle',.9);if(step%2===1)hat(nextT);
-      if(step%8===0&&MEL[(step+4)%MEL.length])note(nextT,MEL[(step+4)%MEL.length]+12,E*.5,'square',.15);
+  function bell(t,m,len,vol){const a=actx,o=a.createOscillator(),o2=a.createOscillator(),gn=a.createGain(),g2=a.createGain();
+    o.type='sine';o.frequency.value=hz(m);o2.type='sine';o2.frequency.value=hz(m)*3;g2.gain.value=.18;
+    gn.gain.setValueAtTime(0,t);gn.gain.linearRampToValueAtTime(vol,t+.008);gn.gain.exponentialRampToValueAtTime(.0001,t+len);
+    o.connect(gn);o2.connect(g2).connect(gn);gn.connect(master);o.start(t);o2.start(t);o.stop(t+len+.05);o2.stop(t+len+.05);}
+  function pad(t,m,len,vol){const a=actx,o=a.createOscillator(),gn=a.createGain(),f=a.createBiquadFilter();
+    o.type='triangle';o.frequency.value=hz(m);f.type='lowpass';f.frequency.value=600;
+    gn.gain.setValueAtTime(0,t);gn.gain.linearRampToValueAtTime(vol,t+.08);gn.gain.exponentialRampToValueAtTime(.0001,t+len);
+    o.connect(f).connect(gn).connect(master);o.start(t);o.stop(t+len+.05);}
+  function tick(t){const a=actx,o=a.createOscillator(),gn=a.createGain();o.type='sine';o.frequency.setValueAtTime(1800,t);o.frequency.exponentialRampToValueAtTime(900,t+.04);
+    gn.gain.setValueAtTime(.12,t);gn.gain.exponentialRampToValueAtTime(.0001,t+.05);o.connect(gn).connect(master);o.start(t);o.stop(t+.06);}
+  function sched(){while(nextT<actx.currentTime+.3){const m=MEL[step%MEL.length],bs=BASS[step%BASS.length];
+      if(m)bell(nextT,m,E*2.6,.55);
+      if(bs)pad(nextT,bs,E*3.8,.5);
+      if(step%4===2)tick(nextT);
+      if(step%32===28)bell(nextT,96,E*3,.12); // a tiny twinkle now and then
       nextT+=E;step++;}}
   function start(){if(!on||playing)return;const a=ac();if(!a)return;try{a.resume();}catch(_){}
     master=master||(()=>{const gn=a.createGain();gn.gain.value=0;gn.connect(a.destination);return gn})();
-    master.gain.setTargetAtTime(ducked?0:.06,a.currentTime,.3);nextT=a.currentTime+.1;playing=true;timer=setInterval(sched,60);}
-  function stop(){if(!playing)return;playing=false;clearInterval(timer);if(master)master.gain.setTargetAtTime(0,actx.currentTime,.1);}
+    master.gain.setTargetAtTime(ducked?0:.09,a.currentTime,.6);nextT=a.currentTime+.1;playing=true;timer=setInterval(sched,80);}
+  function stop(){if(!playing)return;playing=false;clearInterval(timer);if(master)master.gain.setTargetAtTime(0,actx.currentTime,.15);}
   const btn=document.getElementById('music');
   btn.onclick=e=>{e.stopPropagation();on=!on;btn.textContent=on?'♫ MUSIC':'♫ OFF';btn.setAttribute('aria-pressed',on);on?start():stop();};
   addEventListener('pointerdown',e=>{if(e.target.closest&&e.target.closest('#music'))return;if(on&&!playing)start();},{capture:true});
   addEventListener('keydown',()=>{if(on&&!playing)start();},{capture:true});
-  return {start,stop,duck(v){ducked=v;if(master&&actx)master.gain.setTargetAtTime(v?0:(playing?.06:0),actx.currentTime,.2);}};
+  return {start,stop,duck(v){ducked=v;if(master&&actx)master.gain.setTargetAtTime(v?0:(playing?.09:0),actx.currentTime,.2);}};
 })();
 
 /* ---------- finish u-pick ---------- */
