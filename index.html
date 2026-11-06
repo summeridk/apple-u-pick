@@ -180,7 +180,6 @@
   <div></div>
   <div class="hud">
     <button class="btn" id="music" aria-pressed="true">♫ MUSIC</button>
-    <button class="btn" id="sound" aria-pressed="true">♪ ON</button>
     <span class="btn count water" id="water" aria-live="polite">💧 THIRSTY</span>
     <span class="btn count" id="count" aria-live="polite">🍎 <span id="cn">0</span>/8</span>
   </div>
@@ -434,7 +433,7 @@ function slotPos(i){const top=bBottom-bh, sp=Math.floor(bw*.27);
 /* ================= audio ================= */
 let actx=null,soundOn=true;
 const sb=document.getElementById('sound');
-sb.onclick=()=>{soundOn=!soundOn;sb.textContent=soundOn?'♪ ON':'♪ OFF';sb.setAttribute('aria-pressed',soundOn)};
+if(sb)sb.onclick=()=>{soundOn=!soundOn;sb.textContent=soundOn?'♪ ON':'♪ OFF';sb.setAttribute('aria-pressed',soundOn)};
 function ac(){try{actx=actx||new(window.AudioContext||window.webkitAudioContext)();return actx}catch(e){return null}}
 function tone(f,dur,type='square',vol=.06,delay=0,slide=0){if(!soundOn)return;const a=ac();if(!a)return;const t=a.currentTime+delay;
   const o=a.createOscillator(),gn=a.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(slide)o.frequency.linearRampToValueAtTime(f+slide,t+dur);
